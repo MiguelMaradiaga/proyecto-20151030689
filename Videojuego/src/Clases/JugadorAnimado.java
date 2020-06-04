@@ -1,14 +1,12 @@
 package Clases;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.sun.javafx.geom.AreaOp.XorOp;
+
 import Implementacion.Juego;
-
 import javafx.scene.canvas.GraphicsContext;
-
-import java.awt.Color;
-import java.util.ArrayList;
-
 import javafx.scene.shape.Rectangle;
 
 
@@ -16,26 +14,57 @@ public class JugadorAnimado extends ObjetoJuego {
 	
 	private int vidas;
 	private HashMap<String,Animacion> animaciones;
-	private int xImagen;
-	private int yImagen;
+	public  int xImagen;
+	public int yImagen;
 	private int anchoImagen;
 	private int altoImagen;
 	private String animacionActual;
 	private int direccion=1;
+	public static Disparo disparoJugador;
+	public static int disparado=0;
+	public static int mana=100;
+	public  ArrayList <Disparo> disparos = new ArrayList <Disparo>();
 	
+	private int monedas=0;
+	private int puntos=0;
 	
 
+
+	public int getMonedas() {
+		return monedas;
+	}
+
+	public void setMonedas(int monedas) {
+		this.monedas = monedas;
+	}
+
+	public int getPuntos() {
+		return puntos;
+	}
+
+	public void setPuntos(int puntos) {
+		this.puntos = puntos;
+	}
 
 	public JugadorAnimado( int x, int y, int velocidad, String nombreImagen, int vidas,String animacionActual) {
 		super(x, y, velocidad, nombreImagen);
 		this.vidas = vidas;
 		this.animacionActual =  animacionActual;
+		this.mana=mana;
 		
 		animaciones = new HashMap<String, Animacion>();
 		inicializarAnimaciones();
 		
 	}
 	
+	public static int getMana() {
+		return mana;
+	}
+
+	public static void setMana(int mana) {
+		JugadorAnimado.mana = mana;
+	}
+
 	public int getDireccion() {
 		return direccion;
 	}
@@ -160,8 +189,13 @@ public class JugadorAnimado extends ObjetoJuego {
 	public void pintar(GraphicsContext graficos) {
 		
 		graficos.drawImage(Juego.imagenes.get(this.nombreImagen),xImagen,yImagen,anchoImagen,altoImagen,x,y,(direccion)*anchoImagen,altoImagen); //xima,yima,anchofrag,altofrag,xpintar,ypintar,anchopintar,ypintar
+	//	graficos.strokeRect(x+10, y+50,(direccion)*anchoImagen-18-5,altoImagen-50);
+//		graficos.strokeRect(x+(anchoImagen),y+4,1,altoImagen-7);//este
+//		graficos.strokeRect(x,y,anchoImagen,1);//arriba
+//		graficos.strokeRect(x,y+altoImagen,anchoImagen,1);//abajo
+//		graficos.strokeRect(x,y+4,1,altoImagen-7);//oeste
 		
-	}
+}
 	
 @Override
 	public void mover() {
@@ -174,9 +208,16 @@ public class JugadorAnimado extends ObjetoJuego {
 			if(Juego.arriba)
 				y-= velocidad;
 	
+	if((Juego.tiles.get(Juego.tiles.size()-1).getX())<4253-35)
+		Juego.nivel2=true;
 	
-		
-	}
+	if((Juego.tiles.get(Juego.tiles.size()-1).getX())<2105)
+		Juego.nivel3=true;
+	
+	//System.out.println((Juego.tiles.get(Juego.tiles.size()-1).getX()));
+}
+
+	
 
 	
 
@@ -184,16 +225,67 @@ public class JugadorAnimado extends ObjetoJuego {
 public Rectangle obtenerRectangulo() {
 	
 	return new Rectangle(x+10, y,(direccion)*anchoImagen-18,altoImagen);
+} 
+
+public Rectangle obtenerRectanguloPies() {
+	
+	return new Rectangle(x+10, y+50,(direccion)*anchoImagen-18-5,altoImagen-50);
+} 
+
+public Rectangle obtenerPuntosCardinales(String punto) {
+	
+	if(punto=="norte")
+		return new Rectangle(x+5,y,anchoImagen-10,1);
+	if(punto=="sur")
+		return new Rectangle(x+5,y+altoImagen,anchoImagen-10,1);
+	if(punto=="este")
+		return new Rectangle(x+(anchoImagen),y+4,1,altoImagen-7);
+	if(punto=="oeste")
+		return new Rectangle(x,y+4,1,altoImagen-7);
+	
+	return null;
 }
+
 
 public void verificarColisionesItem(Item item) {
 	
 	if(!item.isCapturada() && this.obtenerRectangulo().getBoundsInLocal().intersects(item.obtenerRectangulo().getBoundsInLocal())) {
+		if(item.getNombreImagen().equals("corazon")) {
+		if(vidas<=3)
 		vidas+=item.getCantidadVidas();
-	item.setCapturada(true);
+		}
+		else
+			if(item.getNombreImagen().equals("moneda")) {
+			monedas=	monedas+1;
+			
+			puntos+=100;
+	
 	}
+		if(item.getNombreImagen().equals("pocion mana")) 
+			this.mana=100;
+	
+		
+		item.setCapturada(true);
+	}
+		
 	
 }
+
+
+
+
+public void disparar() {
+	
+	if(mana>=10) {
+	disparos.add(new Disparo(this.x+60,this.y+10,7,"firepink","fuego rosa",-1));
+	 
+	 mana-=10;
+	}
+	 
+	 
+	
+}
+
 
 
 

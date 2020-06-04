@@ -1,9 +1,11 @@
 package Clases;
 
+import java.io.Serializable;
+
 import javafx.scene.canvas.GraphicsContext;
 
 
-public abstract class ObjetoJuego {
+public abstract class ObjetoJuego implements Serializable {
 	protected int x;
 	protected int y;
 	protected int ancho;

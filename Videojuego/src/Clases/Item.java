@@ -1,6 +1,6 @@
 package Clases;
 
-import java.awt.Color;
+
 
 import Implementacion.Juego;
 import javafx.scene.canvas.GraphicsContext;
@@ -21,8 +21,8 @@ public class Item extends ObjetoJuego{
 	public Item(int x, int y, int velocidad, String nombreImagen, int cantidadPuntos) {
 		super(x, y, velocidad, nombreImagen);
 		this.cantidadVidas = cantidadPuntos;
-		this.ancho = (int)Juego.imagenes.get("item").getWidth();
-		this.alto = (int)Juego.imagenes.get("item").getHeight();
+		this.ancho = (int)Juego.imagenes.get("corazon").getWidth();
+		this.alto = (int)Juego.imagenes.get("corazon").getHeight();
 		}
 
 	public int getCantidadVidas() {
@@ -36,7 +36,7 @@ public class Item extends ObjetoJuego{
 	@Override
 	public void pintar(GraphicsContext graficos) {
 		if(!capturada) {
-		graficos.drawImage(Juego.imagenes.get("item"),this.x,this.y,30,30);
+		graficos.drawImage(Juego.imagenes.get(nombreImagen),this.x,this.y,30,30);
 	
 		}
 	}
@@ -45,9 +45,10 @@ public class Item extends ObjetoJuego{
 	public void mover() {
 		
 		
+		if(!Juego.limiteDerecha)	
 			if(Juego.derecha) 
 				x-= velocidad;
-			
+		if(!Juego.limiteIzquerda)
 				if(Juego.izquierda)
 					x+= velocidad;
 			

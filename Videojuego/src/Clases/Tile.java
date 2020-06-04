@@ -1,14 +1,17 @@
 package Clases;
 
+
+
 import Implementacion.Juego;
 import javafx.scene.canvas.GraphicsContext;
+
 import javafx.scene.shape.Rectangle;
 
 public class Tile extends ObjetoJuego{
 
 	private int xImagen;
 	private int yImagen;
-	private int tipoTile;
+
 	public Tile(int tipoTile,int x, int y, int velocidad, String nombreImagen,int ancho,int alto) {
 		
 		super(x, y, velocidad, nombreImagen);
@@ -104,6 +107,11 @@ public class Tile extends ObjetoJuego{
 					;
 			break;
 			
+		case 17:
+			this.xImagen=0;
+			this.yImagen=0;
+			break;
+		
 		}
 	}
 	public int getxImagen() {
@@ -117,73 +125,120 @@ public class Tile extends ObjetoJuego{
 	public void pintar(GraphicsContext graficos) {
 		graficos.drawImage(Juego.imagenes.get(nombreImagen), xImagen, yImagen,ancho,alto,x,y,70,70);
 		
+		
 	}
 	
 	@Override
 	
 		public void mover() {
 		
-		
+		if(!Juego.limiteDerecha)	
 			if(Juego.derecha) 
 				x-= velocidad;
-			
+		if(!Juego.limiteIzquerda)
 				if(Juego.izquierda)
 					x+= velocidad;
 			
 		
 		
-			if(Juego.jugadorAnimado.y>70*9)
-				if(Juego.abajo)
-				y-= velocidad;
 			
-		
-		if(Juego.jugadorAnimado.y<90)
-			if(Juego.arriba)
-				y+= velocidad;
 		
 			
 		}
 	
 public Rectangle obtenerRectangulo() {
 		
-		return new Rectangle(x, y,80,80);
+		return new Rectangle(x, y,80-10,40);
 	}
 
-public void verificarColisionCosas(int i) {
+public Rectangle obtenerRectanguloLava() {
 	
-	if(i<20) {
-		if (this.obtenerRectangulo().intersects(Juego.jugadorAnimado.obtenerRectangulo().getBoundsInLocal())){
-		
-				Juego.limiteArriba=true;
-			System.out.println("choca");
-		
-		}else {
-			
-			Juego.h++;
-		}
-	}
+	return new Rectangle(x, y+5,70,70-5);
+}
+
+public void verificarColisionJugadorCosas(){
 	
-	if(i>33&&i<43) {
-		if (this.obtenerRectangulo().intersects(Juego.jugadorAnimado.obtenerRectangulo().getBoundsInLocal())){
+	if (this.obtenerRectangulo().intersects(Juego.jugadorAnimado.obtenerPuntosCardinales("norte").getBoundsInLocal()))
 		
-				Juego.limiteAbajo=true;
-			System.out.println("choca");
+		Juego.limiteArriba=true;
+	else
+		Juego.paredArriba++;
+	if (this.obtenerRectangulo().intersects(Juego.jugadorAnimado.obtenerPuntosCardinales("sur").getBoundsInLocal()))
 		
-		}else {
-			
-			Juego.h++;
-		}
-	}
+		Juego.limiteAbajo=true;
+	else
+		Juego.paredAbajo++;
+	
+	if (this.obtenerRectangulo().intersects(Juego.jugadorAnimado.obtenerPuntosCardinales("este").getBoundsInLocal()))
 		
+		Juego.limiteDerecha=true;
+	else
+		Juego.paredDerecha++;
+	if (this.obtenerRectangulo().intersects(Juego.jugadorAnimado.obtenerPuntosCardinales("oeste").getBoundsInLocal()))
+		
+		Juego.limiteIzquerda=true;
+	else
+		Juego.paredIzquierda++;
 	
 	
+	
+	
+	
+}
 
 
+public void verificarJugadorLava() {
 	
+	
+	if (this.obtenerRectanguloLava().intersects(Juego.jugadorAnimado.obtenerRectanguloPies().getBoundsInLocal()))
+		Juego.jugadorAnimado.setVidas(Juego.jugadorAnimado.getVidas()-1);
+}
+
+
+
+public void verificarColisionFlechaPared(int i,Trampas flechas) {
+	
+
+		if (this.obtenerRectangulo().intersects(flechas.obtenerRectangulo().getBoundsInLocal())){
+		
+				flechas.setY(70*3/2);
+				flechas.setColision(0);
+		
+		
 	}
 		
 }
+
+
+	public void verificarColisionParedDisparoEnemigo(Enemigo enemigo,int i) {
+		try {
+			if(this.obtenerRectangulo().getBoundsInLocal().intersects(enemigo.disparos.get(i).obtenerRectangulo().getBoundsInLocal()))  
+				enemigo.disparos.remove(i);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+			
+			
+
+	}
 	
+public void verificarColisionParedDisparoJugador(int i) {
+	try {
+		if( this.obtenerRectangulo().getBoundsInLocal().intersects(Juego.jugadorAnimado.disparos.get(i).obtenerRectangulo().getBoundsInLocal())) 
+			Juego.jugadorAnimado.disparos.remove(i);
+		else
+			if(Juego.jugadorAnimado.disparos.get(i).getX()>Juego.tiles.get(Juego.tiles.size()-1).getX())
+				Juego.jugadorAnimado.disparos.remove(i);
+	} catch (Exception e) {
+	}
+	
+		
+	}
+	
+		
+	
+}
 
 
 

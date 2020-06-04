@@ -2,11 +2,13 @@ package Clases;
 
 
 
+import java.io.Serializable;
+
 import javafx.scene.shape.Rectangle;
 
 
 
-public class Animacion {
+public class Animacion implements Serializable{
 	private double duracion;
 	private Rectangle coordenadas[];
 	public Animacion(double duracion, Rectangle coordenadas[]) {
